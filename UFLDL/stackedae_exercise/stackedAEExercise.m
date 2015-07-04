@@ -60,7 +60,7 @@ options.Method = 'lbfgs';
 options.maxIter = 5;
 options.display = 'on';
 [sae1OptTheta, cost] =  minFunc(@(p)sparseAutoencoderCost(p,...
-    inputSize,hiddenSizeL1,lambda,sparsityParam,beta,trainData),sae1Theta,options);%è®­ç»ƒå‡ºç¬¬ä¸€å±‚ç½‘ç»œçš„å‚æ•°
+    inputSize,hiddenSizeL1,lambda,sparsityParam,beta,trainData),sae1Theta,options);%ÑµÁ·³öµÚÒ»²ãÍøÂçµÄ²ÎÊý
 % save('saves/step2.mat', 'sae1OptTheta');
 
 DISPLAY = true;
@@ -92,7 +92,7 @@ sae2Theta = initializeParameters(hiddenSizeL2, hiddenSizeL1);
 %
 %                You should store the optimal parameters in sae2OptTheta
 [sae2OptTheta, cost] =  minFunc(@(p)sparseAutoencoderCost(p,...
-    hiddenSizeL1,hiddenSizeL2,lambda,sparsityParam,beta,sae1Features),sae2Theta,options);%è®­ç»ƒå‡ºç¬¬ä¸€å±‚ç½‘ç»œçš„å‚æ•°
+    hiddenSizeL1,hiddenSizeL2,lambda,sparsityParam,beta,sae1Features),sae2Theta,options);%ÑµÁ·³öµÚÒ»²ãÍøÂçµÄ²ÎÊý
 % save('saves/step3.mat', 'sae2OptTheta');
 
 figure;
@@ -133,7 +133,7 @@ softmaxModel = softmaxTrain(hiddenSizeL2,numClasses,softmaxLambda,...
                             sae2Features,trainLabels,softoptions);
 saeSoftmaxOptTheta = softmaxModel.optTheta(:);
 
-save('saves/step4.mat', 'saeSoftmaxOptTheta');
+% save('saves/step4.mat', 'saeSoftmaxOptTheta');
 % -------------------------------------------------------------------------
 
 
@@ -155,6 +155,9 @@ stack{2}.b = sae2OptTheta(2*hiddenSizeL2*hiddenSizeL1+1:2*hiddenSizeL2*hiddenSiz
 
 % Initialize the parameters for the deep model
 [stackparams, netconfig] = stack2params(stack);
+% saeSoftmaxOptTheta Îª2000 * 1¾ØÕó£¬±äÐÎºóÎª10 * 200,ÒòÎªµÚ¶þ²ãµÄÒþ²Ø²ãÎª200 *
+% 1£¬softmax([10*200] * [200*1])= [10 *1],
+% Ã¿¸öÖµ¾ÍÊÇ¶ÔÓ¦µÄ¸ÅÂÊ£¬softmax¾ÍÊÇÒ»¸öº¯Êý±ä»»£¬¶Ô¾ØÕó£¨Í¨³£ÊÇÏòÁ¿£©ÖÐÃ¿Ò»¸öÖµ½øÐÐ±ä»»¡£
 stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 
 %% ---------------------- YOUR CODE HERE  ---------------------------------
@@ -165,14 +168,15 @@ stackedAETheta = [ saeSoftmaxOptTheta ; stackparams ];
 %
 [stackedAEOptTheta, cost] =  minFunc(@(p)stackedAECost(p,inputSize,hiddenSizeL2,...
                          numClasses, netconfig,lambda, trainData, trainLabels),...
-                        stackedAETheta,options);%è®­ç»ƒå‡ºç¬¬ä¸€å±‚ç½‘ç»œçš„å‚æ•°
-save('saves/step5.mat', 'stackedAEOptTheta');
+                        stackedAETheta,options);%ÑµÁ·³öµÚÒ»²ãÍøÂçµÄ²ÎÊý
+% save('saves/step5.mat', 'stackedAEOptTheta');
 
 figure;
 if DISPLAY
   optStack = params2stack(stackedAEOptTheta(hiddenSizeL2*numClasses+1:end), netconfig);
   W11 = optStack{1}.w;
   W12 = optStack{2}.w;
+  % TODO(zellyn): figure out how to display a 2-level network
   % display_network(log(1 ./ (1-W11')) * W12');
 end
 % -------------------------------------------------------------------------
