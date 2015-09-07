@@ -6,7 +6,10 @@ from collections import defaultdict
 import math
 
 """
-将语料库中出现次数少于5的替换为_RARE_
+将语料库(gene.train)中出现次数少于5的替换为_RARE_
+方法：扫描两遍gene.train，第一遍统计每个word个数，存入dict
+      然后遍历dict，将number<5的存入rare_set
+      第二遍替换，如果该word在rare_set中，则替换为_RARE_
 """
 
 def get_rare_words(corpus_file):
