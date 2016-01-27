@@ -5,7 +5,9 @@ import json
 import itertools
 import collections
 
+#count_dict用来保存count(X->w), count(X->YZ), count(X)
 count_dict = {}
+#word_set用来保存word(废话)
 word_set = set()
 
 def load_counts(fname):
@@ -60,6 +62,7 @@ def decode_line(line):
                 continue
             pos, terminal = count_key
             if terminal == w:
+                #计算最小零件pi(i,i,X)
                 pi_dict[(i, i, pos)] = q_func(pos, terminal)
                 bp_dict[(i, i, pos)] = terminal
 
@@ -74,9 +77,13 @@ def decode_line(line):
                 for s in range(i, j):
                     current_q = q_func(X, Y, Z) * pi_dict[(i, s, Y)] * pi_dict[(s + 1, j, Z)]
                     if current_q > pi_dict[(i, j, X)]:
+                        #计算此时最大概率pi
                         pi_dict[(i, j, X)] = current_q
+                        #计算此时的bp
                         bp_dict[(i, j, X)] = (Y, Z, s)
+    #此时已经得到pi(0,n,X)，虽然我们只要X=SBARQ，但是全求了也没什么不可以
     maxY, maxZ, maxs = bp_dict[(0, len(words) - 1, 'SBARQ')]
+    #再反向递推得到parse tree
     word_tree = words_to_tree(source.split(' '), 0, maxs, len(words) - 1, 'SBARQ', maxY, maxZ, bp_dict)
 
     return word_tree
